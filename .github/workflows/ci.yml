@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+
+jobs:
+  docs-validation:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate lesson docs
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ ! -f README.md ]]; then
+            echo "README.md is missing"
+            exit 1
+          fi
+
+          shopt -s nullglob
+          files=( [0-9][0-9]-*.md )
+
+          if [[ ${#files[@]} -eq 0 ]]; then
+            echo "No day markdown files found (expected pattern: 01-*.md)"
+            exit 1
+          fi
+
+          echo "Found ${#files[@]} day files"
+
+          for f in "${files[@]}"; do
+            echo "Checking ${f}"
+
+            if ! grep -qE '^# Day [0-9]{2} - ' "${f}"; then
+              echo "Missing or invalid day title in ${f}"
+              exit 1
+            fi
+
+            if ! grep -q '^## What This File Does' "${f}"; then
+              echo "Missing '## What This File Does' in ${f}"
+              exit 1
+            fi
+
+            if ! grep -q '^## Task' "${f}"; then
+              echo "Missing '## Task' in ${f}"
+              exit 1
+            fi
+
+            if ! grep -q '^```bash' "${f}"; then
+              echo "Missing bash code block in ${f}"
+              exit 1
+            fi
+          done
+
+          echo "All checks passed"
