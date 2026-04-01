@@ -1,11 +1,14 @@
 ﻿# Day 11 - Multi-stage Builds
 
 ## What This File Does
-Builds a multi-stage image to reduce final image size and checks resulting image layers.
+Builds an optimized multi-stage image, then inspects image size and layer history.
+
+## Syllabus Mapping
+Unit II: Image layering, image history/layers inspection, and production-focused image optimization.
 
 
 ## Task
-Build optimized production image using multi-stage Dockerfile.
+Build an optimized production image using a multi-stage Dockerfile and verify its layers.
 
 ```bash
 docker build -t app:multi -f Dockerfile .
